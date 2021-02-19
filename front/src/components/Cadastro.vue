@@ -84,6 +84,8 @@ export default {
     methods: {
         async cadastrarProduto() {
             await Servico.insertProduto(this.nomeField, this.descricaoField, this.categoriaField, this.precoField, this.descontoField);
+            alert("Cadastro enviado para o servidor");
+            this.$emit("AtualizaLista");
         }
     }
 };

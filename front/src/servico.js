@@ -34,22 +34,6 @@ class Servico {
         return axios.delete(`${url}pedidos/${id}`)
     }
 
-    static getProduto(){
-        return new Promise((resolve, reject) => {
-            try {
-                const res = axios.get(`${url}produtos`);
-                const data = res.data;
-                resolve(
-                    data.map(produto => ({
-                        ...produto
-                    }))
-                )
-            } catch (err) {
-                reject(err)
-            }
-        })
-    }
-
     static insertProduto(nome, descricao, categoria, preco, desconto){
         return axios.post(`${url}produtos`, {
             "nome": nome,
