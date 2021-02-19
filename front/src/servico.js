@@ -22,7 +22,7 @@ class Servico {
     static insertPedido(numped, produtos, totdescont, totprodut, taxentrega, totpedido){
         return axios.post(`${url}pedidos`, {
             "numped": numped,
-            "produtos": [produtos],
+            "produtos": produtos,
             "totdescont": totdescont,
             "totprodut": totprodut,
             "taxentrega": taxentrega,

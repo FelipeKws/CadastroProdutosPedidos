@@ -1,6 +1,6 @@
 <template>
     <div class = "container box">
-        <div action="/cadastro" method="POST" class="content">
+        <div action="/cadastro" class="content">
             <h1 class="label">Cadastro de produtos</h1><hr>
             <div class="field">
                 <label class="label">Nome</label>
@@ -60,7 +60,7 @@
             </div>
             <div class="field is-grouped is-grouped-right">
                 <div class="control">
-                    <button class="button is-primary" @click="cadastrarProduto">Cadastrar</button>
+                    <button class="button is-danger" @click="cadastrarProduto">Cadastrar</button>
                 </div>
             </div>
         </div>
@@ -78,12 +78,16 @@ export default {
             categoriaField: "",
             precoField: "",
             descontoField: "",
+            precoFormatado: "",
+            descontoFormatado: "",
             Cadastro: {}
         }
     },
     methods: {
         async cadastrarProduto() {
-            await Servico.insertProduto(this.nomeField, this.descricaoField, this.categoriaField, this.precoField, this.descontoField);
+            this.precoFormatado = Number(this.precoField).toFixed(2);
+            this.descontoFormatado = Number(this.descontoField).toFixed(2);
+            await Servico.insertProduto(this.nomeField, this.descricaoField, this.categoriaField, this.precoFormatado, this.descontoFormatado);
             alert("Cadastro enviado para o servidor");
             this.$emit("AtualizaLista");
         }
