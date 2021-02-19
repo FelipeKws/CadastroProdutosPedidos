@@ -85,9 +85,10 @@ export default {
     },
     methods: {
         async cadastrarProduto() {
+            const accessToken = await this.$auth.getTokenSilently()
             this.precoFormatado = Number(this.precoField).toFixed(2);
             this.descontoFormatado = Number(this.descontoField).toFixed(2);
-            await Servico.insertProduto(this.nomeField, this.descricaoField, this.categoriaField, this.precoFormatado, this.descontoFormatado);
+            await Servico.insertProduto(this.nomeField, this.descricaoField, this.categoriaField, this.precoFormatado, this.descontoFormatado, accessToken);
             alert("Cadastro enviado para o servidor");
             this.$emit("AtualizaLista");
         }

@@ -50,10 +50,10 @@ export default {
         id: String,
         numpedido: Number,
         produtos: Array,
-        totprodutos: Number,
+        totprodutos: String,
         totdescontos: Number,
         taxaentrega: String,
-        totpedido: Number
+        totpedido: String
     },
 
     methods: {

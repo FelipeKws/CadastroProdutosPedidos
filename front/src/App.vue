@@ -44,10 +44,10 @@ export default {
       pedidos: {
         numPedido: Date.now(),
         produtos: [],
-        totprodutos: 0,
+        totprodutos: "0",
         totdescontos: 0,
         taxaentrega: "0",
-        totpedido: 0
+        totpedido: "0"
       },
       flagProduto: 1,
       flagPedidos: 0,
@@ -71,57 +71,65 @@ export default {
   },
   methods: {
     AtualizarLista: function(){
+      this.ChamaProdutos();
+    },
+    ChamaPedidos: function(){
+      axios.get("http://localhost:3000/api/pedidos").then(res => {
+          this.BDpedidos = res.data
+      });
+    },
+    ChamaProdutos: function(){
       axios.get("http://localhost:3000/api/produtos").then(res => {
           this.produtos = res.data
       })
     },
     ComprarProduto: function($event){
       this.pedidos.produtos.push($event.nome);
-      this.pedidos.totprodutos = Number(this.pedidos.totprodutos) + Number($event.valor);
+      this.pedidos.totprodutos = (Number(this.pedidos.totprodutos) + Number($event.valor)).toFixed(2);
       this.pedidos.totdescontos = Number(this.pedidos.totdescontos) + Number($event.desconto);
       this.pedidos.totpedido = Number(this.pedidos.totprodutos) - Number(this.pedidos.totdescontos);
       this.pedidos.taxaentrega = (Number(this.pedidos.totpedido) * 0.03).toFixed(2);
-      this.pedidos.totpedido = Number(this.pedidos.totpedido) + Number(this.pedidos.taxaentrega);
+      this.pedidos.totpedido = (Number(this.pedidos.totpedido) + Number(this.pedidos.taxaentrega)).toFixed(2);
     },
-    FinalizarCompra: function(){
+    async FinalizarCompra(){
+      const accessToken = await this.$auth.getTokenSilently()
       Servico.insertPedido(
         this.pedidos.numPedido, 
         this.pedidos.produtos,  
         this.pedidos.totdescontos, 
         this.pedidos.totprodutos,
         this.pedidos.taxaentrega, 
-        this.pedidos.totpedido);
+        this.pedidos.totpedido,
+        accessToken);
 
       this.pedidos.produtos = [];
-      this.pedidos.totprodutos = 0;
+      this.pedidos.totprodutos = "0";
       this.pedidos.totdescontos = 0;
       this.pedidos.taxaentrega = "0";
-      this.pedidos.totpedido = 0;
+      this.pedidos.totpedido = "0";
 
       alert("Pedido enviado para o servidor");
     },
-    DeletarPedido: function($event){
-      Servico.deletePedido(String($event.id));
+    async DeletarPedido($event){
+      const accessToken = await this.$auth.getTokenSilently()
 
-      axios.get("http://localhost:3000/api/pedidos").then(res => {
-          this.BDpedidos = res.data
-      });
-
+      Servico.deletePedido(String($event.id), accessToken);
+      
+      this.ChamaPedidos();
+      
       alert("Pedido de deleção enviada para o servidor");
     },
     ShowProdutos: function(){
-      axios.get("http://localhost:3000/api/produtos").then(res => {
-          this.produtos = res.data
-      })
+      this.ChamaProdutos();
+
       this.flagProduto = 1;
       this.flagPedidos = 0;
       this.flagCarrinho = 0;
       this.flagCadProd = 0;
     },
     ShowPedidos: function(){
-      axios.get("http://localhost:3000/api/pedidos").then(res => {
-          this.BDpedidos = res.data
-      })
+      this.ChamaPedidos();
+      
       this.flagProduto = 0;
       this.flagPedidos = 1;
       this.flagCarrinho = 0;

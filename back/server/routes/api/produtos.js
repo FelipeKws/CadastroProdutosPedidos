@@ -1,7 +1,28 @@
 const express = require('express');
 const mongodb = require('mongodb');
+const jwt = require("express-jwt");
+const jwksRsa = require("jwks-rsa"); 
 
 const router = express.Router();
+const authConfig = {
+    domain: "felipeks.us.auth0.com",
+    audience: "https://vue-express-api.com"
+};
+
+const checkJwt = jwt({
+    // Provide a signing key based on the key identifier in the header and the signing keys provided by your Auth0 JWKS endpoint.
+    secret: jwksRsa.expressJwtSecret({
+      cache: true,
+      rateLimit: true,
+      jwksRequestsPerMinute: 5,
+      jwksUri: `https://${authConfig.domain}/.well-known/jwks.json`
+    }),
+  
+    // Validate the audience (Identifier) and the issuer (Domain).
+    audience: authConfig.audience,
+    issuer: `https://${authConfig.domain}/`,
+    algorithms: ["RS256"]
+});
 
 //GET Posts
 router.get('/', async (req, res) => {
