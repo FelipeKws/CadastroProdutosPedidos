@@ -16,7 +16,7 @@ router.post('/', async(req, res) => {
         numped: req.body.numped,
         produtos: req.body.produtos,
         totdescont: req.body.totdescont,
-        totproduto: req.body.totproduto,
+        totproduto: req.body.totprodut,
         taxentrega: req.body.taxentrega,
         totpedido: req.body.totpedido
     });
@@ -26,7 +26,7 @@ router.post('/', async(req, res) => {
 //DELETE Post
 router.delete('/:id', async (req, res) => {
     const posts = await loadPostsCollection();
-    await posts.deleteOne({_id: new mongodb.ObjectID(req.params.id)});
+    posts.deleteOne({_id: new mongodb.ObjectID(req.params.id)});
     res.status(200).send();
 })
 

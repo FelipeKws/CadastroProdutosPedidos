@@ -1,12 +1,23 @@
 <template>
   <div>
     <div id="header">
-      <BarraNavegacao/>
+      <BarraNavegacao @Produtos="ShowProdutos" @Pedidos="ShowPedidos" @Carrinho="ShowCarrinho" @CadProd="ShowCadProd"/>
     </div>
-    <Cadastro @AtualizaLista="AtualizarLista"/>
-    <Carrinho @FinalizarCarrinho="FinalizarCompra" :produtos="pedidos.produtos" :totprodutos="pedidos.totprodutos" :totdescontos="pedidos.totdescontos" :taxaentrega="pedidos.taxaentrega" :totpedido="pedidos.totpedido"/>
-    <div id="cards" class="columns" v-for="(produto) in produtos" :key="produto._id">
-      <CardProduto :nome="produto.nome" :categoria="produto.categoria" :descricao="produto.descricao" :valor="produto.preco" :desconto="produto.desconto" @ComprarProduto="ComprarProduto($event)"/>
+    <div v-if="flagCadProd === 1">
+      <Cadastro @AtualizaLista="AtualizarLista"/>
+    </div>
+    <div v-if="flagProduto === 1">
+      <div id="cards" class="columns" v-for="(produto) in produtos" :key="produto._id">
+        <CardProduto :nome="produto.nome" :categoria="produto.categoria" :descricao="produto.descricao" :valor="produto.preco" :desconto="produto.desconto" @ComprarProduto="ComprarProduto($event)"/>
+      </div>
+    </div>
+    <div v-if="flagPedidos === 1">
+      <div id="pedidos" class="columns" v-for="(pedido) in BDpedidos" :key="pedido._id">
+        <CardPedidos :id="pedido._id" :numpedido="pedido.numped" :produtos="pedido.produtos" :totprodutos="pedido.totproduto" :totdescontos="pedido.totdescont" :taxaentrega="pedido.taxentrega" :totpedido="pedido.totpedido" @DeletarPedido="DeletarPedido($event)"/>
+      </div>
+    </div>
+    <div v-if="flagCarrinho === 1">
+      <Carrinho @FinalizarCarrinho="FinalizarCompra" :produtos="pedidos.produtos" :totprodutos="pedidos.totprodutos" :totdescontos="pedidos.totdescontos" :taxaentrega="pedidos.taxaentrega" :totpedido="pedidos.totpedido"/>
     </div>
   </div>
 </template>
@@ -18,33 +29,38 @@ import CardProduto from './components/CardProduto.vue'
 import axios from 'axios'
 import Carrinho from './components/Carrinho.vue'
 import Servico from './servico'
+import CardPedidos from './components/CardPedidos.vue'
 
 export default {
   name: 'App',
   data(){
       return {
       produtos: [],
+      BDpedidos: [],
       pedidos: {
         numPedido: Date.now(),
         produtos: [],
         totprodutos: 0,
         totdescontos: 0,
-        taxaentrega: 0,
+        taxaentrega: "0",
         totpedido: 0
       },
+      flagProduto: 0,
+      flagPedidos: 0,
+      flagCarrinho: 0,
+      flagCadProd: 0,
       error: ''
       }
   },
   created: function(){
-      axios.get("http://localhost:3000/api/produtos").then(res => {
-          this.produtos = res.data
-      })
+            
   },
   components: { 
     BarraNavegacao,
     Cadastro,
     CardProduto,
-    Carrinho, 
+    Carrinho,
+    CardPedidos, 
   },
   methods: {
     AtualizarLista: function(){
@@ -57,11 +73,10 @@ export default {
       this.pedidos.totprodutos = Number(this.pedidos.totprodutos) + Number($event.valor);
       this.pedidos.totdescontos = Number(this.pedidos.totdescontos) + Number($event.desconto);
       this.pedidos.totpedido = Number(this.pedidos.totprodutos) - Number(this.pedidos.totdescontos);
-      this.pedidos.taxaentrega = Number(this.pedidos.totpedido) * 0.03;
+      this.pedidos.taxaentrega = (Number(this.pedidos.totpedido) * 0.03).toFixed(2);
       this.pedidos.totpedido = Number(this.pedidos.totpedido) + Number(this.pedidos.taxaentrega);
     },
     FinalizarCompra: function(){
-      console.log(this.pedidos)
       Servico.insertPedido(
         this.pedidos.numPedido, 
         this.pedidos.produtos,  
@@ -70,13 +85,52 @@ export default {
         this.pedidos.taxaentrega, 
         this.pedidos.totpedido);
 
-      /*alert("Pedido enviado para o servidor");
-
       this.pedidos.produtos = [];
       this.pedidos.totprodutos = 0;
       this.pedidos.totdescontos = 0;
-      this.pedidos.taxaentrega = 0;
-      this.pedidos.totpedido = 0*/
+      this.pedidos.taxaentrega = "0";
+      this.pedidos.totpedido = 0;
+
+      alert("Pedido enviado para o servidor");
+    },
+    DeletarPedido: function($event){
+      Servico.deletePedido(String($event.id));
+
+      axios.get("http://localhost:3000/api/pedidos").then(res => {
+          this.BDpedidos = res.data
+      });
+
+      alert("Pedido de deleção enviada para o servidor");
+    },
+    ShowProdutos: function(){
+      axios.get("http://localhost:3000/api/produtos").then(res => {
+          this.produtos = res.data
+      })
+      this.flagProduto = 1;
+      this.flagPedidos = 0;
+      this.flagCarrinho = 0;
+      this.flagCadProd = 0;
+    },
+    ShowPedidos: function(){
+      axios.get("http://localhost:3000/api/pedidos").then(res => {
+          this.BDpedidos = res.data
+      })
+      this.flagProduto = 0;
+      this.flagPedidos = 1;
+      this.flagCarrinho = 0;
+      this.flagCadProd = 0;
+    },
+    ShowCarrinho: function(){
+      this.flagProduto = 0;
+      this.flagPedidos = 0;
+      this.flagCarrinho = 1;
+      this.flagCadProd = 0;
+    },
+    ShowCadProd: function(){
+      this.flagProduto = 0;
+      this.flagPedidos = 0;
+      this.flagCarrinho = 0;
+      this.flagCadProd = 1;
     }
   }
 }
@@ -89,6 +143,9 @@ export default {
 #cards {
   margin-left: 5%;
   margin-right: 5%;
+  margin-bottom: 2%;
+}
+#pedidos {
   margin-bottom: 2%;
 }
 </style>

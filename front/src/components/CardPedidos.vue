@@ -1,7 +1,7 @@
 <template>
-    <div class = "container box">
+  <div class = "container box column">
         <div action="/cadastro" class="content">
-            <h1 class="label">Carrinho de produtos</h1><hr>
+            <h1 class="label">#{{numpedido}}</h1><hr>
             <div class="field">
                 <h3>Produtos</h3>
                 <div v-for="(produto,index) in produtos" :key="index">
@@ -37,7 +37,7 @@
             </div>
             <div class="field is-grouped is-grouped-right">
                 <div class="control">
-                    <button class="button is-danger" @click="FinalizarCarrinho">Finalizar pedido</button>
+                    <button class="button is-danger" @click="DeletarPedido">Deletar pedido</button>
                 </div>
             </div>
         </div>
@@ -46,8 +46,9 @@
 
 <script>
 export default {
-
     props: {
+        id: String,
+        numpedido: Number,
         produtos: Array,
         totprodutos: Number,
         totdescontos: Number,
@@ -56,8 +57,8 @@ export default {
     },
 
     methods: {
-        FinalizarCarrinho: function(){
-            this.$emit('FinalizarCarrinho')
+        DeletarPedido: function(){
+            this.$emit('DeletarPedido', {id: this.id})
         }
     }
 

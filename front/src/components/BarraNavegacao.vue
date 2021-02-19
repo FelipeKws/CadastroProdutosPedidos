@@ -2,16 +2,20 @@
   <nav class="navbar" role="navigation" aria-label="main navigation">
     <div id="navbarBasicExample" class="navbar-menu">
       <div class="navbar-start">
-        <a class="navbar-item">
+        <a class="navbar-item" @click="Produtos">
           Produtos
         </a>
 
-        <a class="navbar-item">
+        <a class="navbar-item" @click="Pedidos">
           Pedidos
         </a>
 
-        <a class="navbar-item">
+        <a class="navbar-item" @click="Carrinho">
           Carrinho
+        </a>
+
+        <a class="navbar-item" @click="CadProd">
+          Cadastro de produtos
         </a>
       </div>
 
@@ -33,6 +37,20 @@
 
 <script>
 export default {
+  methods: {
+    Produtos: function(){
+      this.$emit('Produtos')
+    },
+    Pedidos: function(){
+      this.$emit('Pedidos')
+    },
+    Carrinho: function(){
+      this.$emit('Carrinho')
+    },
+    CadProd: function(){
+      this.$emit('CadProd')
+    }
+  }
 }
 </script>
 
