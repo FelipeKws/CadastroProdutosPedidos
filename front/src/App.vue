@@ -4,7 +4,8 @@
       <BarraNavegacao @Produtos="ShowProdutos" @Pedidos="ShowPedidos" @Carrinho="ShowCarrinho" @CadProd="ShowCadProd"/>
     </div>
     <div v-if="flagCadProd === 1">
-      <Cadastro @AtualizaLista="AtualizarLista"/>
+      <Cadastro v-if="$auth.isAuthenticated" @AtualizaLista="AtualizarLista"/>
+      <AvisoLogin v-if="!$auth.isAuthenticated"/>
     </div>
     <div v-if="flagProduto === 1">
       <div id="cards" class="columns" v-for="(produto) in produtos" :key="produto._id">
@@ -13,11 +14,13 @@
     </div>
     <div v-if="flagPedidos === 1">
       <div id="pedidos" class="columns" v-for="(pedido) in BDpedidos" :key="pedido._id">
-        <CardPedidos :id="pedido._id" :numpedido="pedido.numped" :produtos="pedido.produtos" :totprodutos="pedido.totproduto" :totdescontos="pedido.totdescont" :taxaentrega="pedido.taxentrega" :totpedido="pedido.totpedido" @DeletarPedido="DeletarPedido($event)"/>
+        <CardPedidos v-if="$auth.isAuthenticated" :id="pedido._id" :numpedido="pedido.numped" :produtos="pedido.produtos" :totprodutos="pedido.totproduto" :totdescontos="pedido.totdescont" :taxaentrega="pedido.taxentrega" :totpedido="pedido.totpedido" @DeletarPedido="DeletarPedido($event)"/>
       </div>
+      <AvisoLogin v-if="!$auth.isAuthenticated"/>
     </div>
     <div v-if="flagCarrinho === 1">
-      <Carrinho @FinalizarCarrinho="FinalizarCompra" :produtos="pedidos.produtos" :totprodutos="pedidos.totprodutos" :totdescontos="pedidos.totdescontos" :taxaentrega="pedidos.taxaentrega" :totpedido="pedidos.totpedido"/>
+      <Carrinho v-if="$auth.isAuthenticated" @FinalizarCarrinho="FinalizarCompra" :produtos="pedidos.produtos" :totprodutos="pedidos.totprodutos" :totdescontos="pedidos.totdescontos" :taxaentrega="pedidos.taxaentrega" :totpedido="pedidos.totpedido"/>
+      <AvisoLogin v-if="!$auth.isAuthenticated"/>
     </div>
   </div>
 </template>
@@ -30,6 +33,7 @@ import axios from 'axios'
 import Carrinho from './components/Carrinho.vue'
 import Servico from './servico'
 import CardPedidos from './components/CardPedidos.vue'
+import AvisoLogin from './components/AvisoLogin.vue'
 
 export default {
   name: 'App',
@@ -45,7 +49,7 @@ export default {
         taxaentrega: "0",
         totpedido: 0
       },
-      flagProduto: 0,
+      flagProduto: 1,
       flagPedidos: 0,
       flagCarrinho: 0,
       flagCadProd: 0,
@@ -53,14 +57,17 @@ export default {
       }
   },
   created: function(){
-            
+    axios.get("http://localhost:3000/api/produtos").then(res => {
+      this.produtos = res.data
+    })
   },
   components: { 
     BarraNavegacao,
     Cadastro,
     CardProduto,
     Carrinho,
-    CardPedidos, 
+    CardPedidos,
+    AvisoLogin, 
   },
   methods: {
     AtualizarLista: function(){
@@ -131,6 +138,10 @@ export default {
       this.flagPedidos = 0;
       this.flagCarrinho = 0;
       this.flagCadProd = 1;
+    },
+    // Log the user in
+    login() {
+      this.$auth.loginWithRedirect();
     }
   }
 }

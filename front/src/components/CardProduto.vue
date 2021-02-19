@@ -30,7 +30,7 @@
             </div>
         </div>
         <footer class="card-footer">
-            <button class="card-footer-item is-success" @click="ComprarProduto()">Comprar</button>
+            <button v-if="$auth.isAuthenticated" class="card-footer-item is-success" @click="ComprarProduto()">Comprar</button>
         </footer>
     </div>
 </template>

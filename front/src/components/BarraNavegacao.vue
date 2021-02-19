@@ -22,12 +22,13 @@
       <div class="navbar-end">
         <div class="navbar-item">
           <div class="buttons">
-            <a class="button is-danger">
-              <strong>Cadastre-se</strong>
-            </a>
-            <a class="button is-light">
-              Log in
-            </a>
+            <!-- Check that the SDK client is not currently loading before accessing is methods -->
+            <div v-if="!$auth.loading">
+              <!-- show login when not authenticated -->
+              <a v-if="!$auth.isAuthenticated" @click="login" class="button is-danger"><strong>Entrar</strong></a>
+              <!-- show logout when authenticated -->
+              <a v-if="$auth.isAuthenticated" @click="logout" class="button is-light"><strong>Sair</strong></a>
+            </div>
           </div>
         </div>
       </div>
@@ -38,6 +39,16 @@
 <script>
 export default {
   methods: {
+    // Log the user in
+    login() {
+      this.$auth.loginWithRedirect();
+    },
+    // Log the user out
+    logout() {
+      this.$auth.logout({
+        returnTo: window.location.origin
+      });
+    },
     Produtos: function(){
       this.$emit('Produtos')
     },

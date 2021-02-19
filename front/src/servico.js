@@ -3,21 +3,6 @@ import axios from 'axios';
 const url = 'http://localhost:3000/api/';
 
 class Servico {
-    static getPedido(){
-        return new Promise((resolve, reject) => {
-            try {
-                const res = axios.get(`${url}pedidos`);
-                const data = res.data;
-                resolve(
-                    data.map(pedido => ({
-                        ...pedido
-                    }))
-                )
-            } catch (err) {
-                reject(err)
-            }
-        })
-    }
 
     static insertPedido(numped, produtos, totdescont, totprodut, taxentrega, totpedido){
         return axios.post(`${url}pedidos`, {
