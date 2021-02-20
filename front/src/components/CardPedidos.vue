@@ -51,7 +51,7 @@ export default {
         numpedido: Number,
         produtos: Array,
         totprodutos: String,
-        totdescontos: Number,
+        totdescontos: String,
         taxaentrega: String,
         totpedido: String
     },

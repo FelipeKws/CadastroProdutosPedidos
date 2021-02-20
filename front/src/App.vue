@@ -45,7 +45,7 @@ export default {
         numPedido: Date.now(),
         produtos: [],
         totprodutos: "0",
-        totdescontos: 0,
+        totdescontos: "0",
         taxaentrega: "0",
         totpedido: "0"
       },
@@ -86,10 +86,12 @@ export default {
     ComprarProduto: function($event){
       this.pedidos.produtos.push($event.nome);
       this.pedidos.totprodutos = (Number(this.pedidos.totprodutos) + Number($event.valor)).toFixed(2);
-      this.pedidos.totdescontos = Number(this.pedidos.totdescontos) + Number($event.desconto);
+      this.pedidos.totdescontos = (Number(this.pedidos.totdescontos) + Number($event.desconto)).toFixed(2);
       this.pedidos.totpedido = Number(this.pedidos.totprodutos) - Number(this.pedidos.totdescontos);
       this.pedidos.taxaentrega = (Number(this.pedidos.totpedido) * 0.03).toFixed(2);
       this.pedidos.totpedido = (Number(this.pedidos.totpedido) + Number(this.pedidos.taxaentrega)).toFixed(2);
+      
+      alert("Pedido adicionado ao carrinho.");
     },
     async FinalizarCompra(){
       const accessToken = await this.$auth.getTokenSilently()
@@ -104,7 +106,7 @@ export default {
 
       this.pedidos.produtos = [];
       this.pedidos.totprodutos = "0";
-      this.pedidos.totdescontos = 0;
+      this.pedidos.totdescontos = "0";
       this.pedidos.taxaentrega = "0";
       this.pedidos.totpedido = "0";
 
@@ -117,7 +119,7 @@ export default {
       
       this.ChamaPedidos();
       
-      alert("Pedido de deleção enviada para o servidor");
+      alert("Pedido para deletar enviado ao servidor");
     },
     ShowProdutos: function(){
       this.ChamaProdutos();

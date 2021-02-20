@@ -50,7 +50,7 @@ export default {
     props: {
         produtos: Array,
         totprodutos: String,
-        totdescontos: Number,
+        totdescontos: String,
         taxaentrega: String,
         totpedido: String
     },
