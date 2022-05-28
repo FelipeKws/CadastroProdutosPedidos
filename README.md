@@ -7,5 +7,5 @@ Na pasta /back temos a API em Express
 
 ## Pasta /front
 ```
-Na pasta /front temos a parte visual feita com o VueJS
+Na pasta /front temos o front-end feito com o VueJS
 ```
